@@ -24,7 +24,7 @@ module "secretsmanager-for-database-url" {
 }
 ```
 
-Ir can also be used for an RDS cluster like this:
+It can also be used for an RDS cluster like this:
 
 ```tf
 module "secretsmanager-for-database-url" {
