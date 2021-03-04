@@ -1,7 +1,7 @@
 variable "database_name" {
   type = string
 
-  description = "Name of the database on `var.db_instance` to be used in the `DATABASE_URL`."
+  description = "Name of the database on to be used in the `DATABASE_URL`."
 }
 
 variable "db_instance" {
@@ -10,6 +10,8 @@ variable "db_instance" {
     password = string
     username = string
   })
+
+  default = null
 
   description = "Database instance to be used in the `DATABASE_URL`."
 }
@@ -24,6 +26,18 @@ variable "protocol" {
   type = string
 
   description = "Protocol to be used in the `DATABASE_URL`."
+}
+
+variable "rds_cluster" {
+  type = object({
+    master_username = string
+    master_password = string
+    endpoint        = string
+  })
+
+  default = null
+
+  description = "Database cluster to be used in the `DATABASE_URL`."
 }
 
 variable "tags" {
