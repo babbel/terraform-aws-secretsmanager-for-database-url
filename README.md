@@ -9,7 +9,7 @@ This is useful in order to load the `DATABASE_URL` into ECS via [`containerDefin
 ```tf
 module "secretsmanager-for-database-url" {
   source  = "babbel/secretsmanager-for-database-url/aws"
-  version = "~> 1.0"
+  version = "~> 1.2"
 
   name_prefix = "example"
 
@@ -29,7 +29,7 @@ It can also be used for an RDS cluster like this:
 ```tf
 module "secretsmanager-for-database-url" {
   source  = "babbel/secretsmanager-for-database-url/aws"
-  version = "~> 1.0"
+  version = "~> 1.2"
 
   name_prefix = "example"
 
