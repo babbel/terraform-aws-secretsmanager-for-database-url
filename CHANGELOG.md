@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0
+
+- [Bump hashicorp/aws dependency](https://github.com/babbel/terraform-aws-secretsmanager-for-database-url/pull/12)
+
 ## v1.1.1
 
 - [Update readme](https://github.com/babbel/terraform-aws-secretsmanager-for-database-url/pull/3)
