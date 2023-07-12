@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0
+
+- [Relax version constraints for modules](https://github.com/babbel/terraform-aws-secretsmanager-for-database-url/pull/19)
+
 ## v1.2.0
 
 - [Bump hashicorp/aws dependency](https://github.com/babbel/terraform-aws-secretsmanager-for-database-url/pull/12)
