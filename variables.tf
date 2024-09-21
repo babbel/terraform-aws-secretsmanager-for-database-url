@@ -1,7 +1,18 @@
+variable "default_tags" {
+  type    = map(string)
+  default = {}
+
+  description = <<EOS
+Map of tags assigned to all AWS resources created by this module.
+EOS
+}
+
 variable "database_name" {
   type = string
 
-  description = "Name of the database on to be used in the `DATABASE_URL`."
+  description = <<EOS
+Name of the database on to be used in the `DATABASE_URL`.
+EOS
 }
 
 variable "db_instance" {
@@ -10,22 +21,27 @@ variable "db_instance" {
     password = string
     username = string
   })
-
   default = null
 
-  description = "Database instance to be used in the `DATABASE_URL`."
+  description = <<EOS
+Database instance to be used in the `DATABASE_URL`.
+EOS
 }
 
 variable "name_prefix" {
   type = string
 
-  description = "Name prefix for the SecretsManager. The full name will be $${var.name_prefix}.database_url."
+  description = <<EOS
+Name prefix for the SecretsManager. The full name will be $${var.name_prefix}.database_url.
+EOS
 }
 
 variable "protocol" {
   type = string
 
-  description = "Protocol to be used in the `DATABASE_URL`."
+  description = <<EOS
+Protocol to be used in the `DATABASE_URL`.
+EOS
 }
 
 variable "rds_cluster" {
@@ -34,15 +50,18 @@ variable "rds_cluster" {
     master_password = string
     endpoint        = string
   })
-
   default = null
 
-  description = "Database cluster to be used in the `DATABASE_URL`."
+  description = <<EOS
+Database cluster to be used in the `DATABASE_URL`.
+EOS
 }
 
-variable "tags" {
+variable "secretsmanager_secret_tags" {
   type    = map(string)
   default = {}
 
-  description = "Tags which will be assigned to all resources."
+  description = <<EOS
+Map of tags assigned to the SecretsManager secret.
+EOS
 }
