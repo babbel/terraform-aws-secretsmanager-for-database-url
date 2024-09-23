@@ -56,3 +56,12 @@ variable "rds_cluster" {
 Database cluster to be used in the `DATABASE_URL`.
 EOS
 }
+
+variable "secretsmanager_secret_tags" {
+  type    = map(string)
+  default = {}
+
+  description = <<EOS
+Map of tags assigned to the SecretsManager secret created by this module.
+EOS
+}
