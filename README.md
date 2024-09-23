@@ -16,11 +16,6 @@ module "secretsmanager-for-database-url" {
   db_instance   = aws_db_instance.example
   database_name = "example"
   protocol      = "mysql2"
-
-  tags = {
-    app = "example"
-    env = "production"
-  }
 }
 ```
 
@@ -36,11 +31,6 @@ module "secretsmanager-for-database-url" {
   rds_cluster   = aws_rds_cluster.example
   database_name = "example"
   protocol      = "mysql2"
-
-  tags = {
-    app = "example"
-    env = "production"
-  }
 }
 ```
 
