@@ -16,7 +16,7 @@ module "secretsmanager" {
   database_name = "example"
   protocol      = "mysql2"
 
-  tags = {
+  default_tags = {
     app = "example"
     env = "production"
   }
