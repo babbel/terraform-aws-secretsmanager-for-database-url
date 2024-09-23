@@ -62,6 +62,6 @@ variable "secretsmanager_secret_tags" {
   default = {}
 
   description = <<EOS
-Map of tags assigned to the SecretsManager secret created by this module.
+Map of tags assigned to the SecretsManager secret created by this module. Tags in this map will override tags in `var.default_tags`.
 EOS
 }
