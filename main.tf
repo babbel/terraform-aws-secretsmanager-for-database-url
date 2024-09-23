@@ -8,7 +8,7 @@ resource "aws_secretsmanager_secret" "this" {
   name        = "${var.name_prefix}.database_url"
   description = "Secret value is managed via Terraform"
 
-  tags = var.tags
+  tags = var.default_tags
 }
 
 resource "aws_secretsmanager_secret_version" "this" {
