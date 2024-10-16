@@ -14,5 +14,5 @@ resource "aws_secretsmanager_secret" "this" {
 resource "aws_secretsmanager_secret_version" "this" {
   secret_id = aws_secretsmanager_secret.this.arn
 
-  secret_string = "${var.protocol}://${local.username}:${local.password}@${local.server}/${var.database_name}"
+  secret_string = "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password)}@${local.server}/${urlencode(var.database_name)}"
 }
