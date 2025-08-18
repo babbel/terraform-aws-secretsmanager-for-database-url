@@ -33,10 +33,10 @@ resource "aws_secretsmanager_secret_version" "reader_endpoint" {
 
 moved {
   from = aws_secretsmanager_secret.this
-  to = aws_secretsmanager_secret.endpoint
+  to   = aws_secretsmanager_secret.endpoint
 }
 
 moved {
   from = aws_secretsmanager_secret_version.this
-  to = aws_secretsmanager_secret_version.endpoint
+  to   = aws_secretsmanager_secret_version.endpoint
 }
