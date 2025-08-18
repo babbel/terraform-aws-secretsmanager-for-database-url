@@ -43,10 +43,16 @@ resource "aws_ecs_task_definition" "example" {
   container_definitions = jsonencode([{
     ...
 
-    secrets = [{
+    secrets = [
+    {
       name  = "DATABASE_URL"
       value = module.secretsmanager-for-database-url.secretsmanager_secret.arn
-    }]
+    },
+    {
+      name  = "DATABASE_REPLICA_URL"
+      value = module.secretsmanager-for-database-url.secretsmanager_secret_reader_endpoint.arn
+    }
+    ]
 
     ...
   }])
