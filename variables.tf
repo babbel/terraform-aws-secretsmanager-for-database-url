@@ -49,6 +49,7 @@ variable "rds_cluster" {
     master_username = string
     master_password = string
     endpoint        = string
+    reader_endpoint = string
   })
   default = null
 
