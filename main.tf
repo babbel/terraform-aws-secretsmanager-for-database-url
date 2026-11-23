@@ -1,8 +1,12 @@
 locals {
   username        = var.db_instance != null ? var.db_instance.username : var.rds_cluster.master_username
-  password        = var.db_instance != null ? var.db_instance.password : var.rds_cluster.master_password
   endpoint        = var.db_instance != null ? var.db_instance.address : var.rds_cluster.endpoint
   reader_endpoint = var.db_instance != null ? var.db_instance.address : var.rds_cluster.reader_endpoint
+
+  write_only = var.secret_string_wo_version != null
+
+  # Only read in plain mode: in write-only mode the password stays out of the state.
+  password = local.write_only ? null : (var.db_instance != null ? var.db_instance.password : var.rds_cluster.master_password)
 }
 
 resource "aws_secretsmanager_secret" "endpoint" {
@@ -15,7 +19,17 @@ resource "aws_secretsmanager_secret" "endpoint" {
 resource "aws_secretsmanager_secret_version" "endpoint" {
   secret_id = aws_secretsmanager_secret.endpoint.arn
 
-  secret_string = "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password)}@${local.endpoint}/${urlencode(var.database_name)}"
+  secret_string = local.write_only ? null : "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password)}@${local.endpoint}/${urlencode(var.database_name)}"
+
+  secret_string_wo         = local.write_only ? "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password_wo)}@${local.endpoint}/${urlencode(var.database_name)}" : null
+  secret_string_wo_version = var.secret_string_wo_version
+
+  lifecycle {
+    precondition {
+      condition     = var.adopt_current_password ? urlencode(local.password_wo) == local.current_password_encoded : true
+      error_message = "The password read from ${var.name_prefix}.database_url does not encode back to the same value, so it was decoded wrongly. Writing it would change the database URL; nothing was written."
+    }
+  }
 }
 
 resource "aws_secretsmanager_secret" "reader_endpoint" {
@@ -28,7 +42,10 @@ resource "aws_secretsmanager_secret" "reader_endpoint" {
 resource "aws_secretsmanager_secret_version" "reader_endpoint" {
   secret_id = aws_secretsmanager_secret.reader_endpoint.arn
 
-  secret_string = "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password)}@${local.reader_endpoint}/${urlencode(var.database_name)}"
+  secret_string = local.write_only ? null : "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password)}@${local.reader_endpoint}/${urlencode(var.database_name)}"
+
+  secret_string_wo         = local.write_only ? "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password_wo)}@${local.reader_endpoint}/${urlencode(var.database_name)}" : null
+  secret_string_wo_version = var.secret_string_wo_version
 }
 
 moved {
