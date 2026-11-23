@@ -9,7 +9,7 @@ This is useful in order to load the `DATABASE_URL` into ECS via [`containerDefin
 ```tf
 module "secretsmanager-for-database-url" {
   source  = "babbel/secretsmanager-for-database-url/aws"
-  version = "~> 1.2"
+  version = "~> 3.0"
 
   name_prefix = "example"
 
@@ -24,13 +24,74 @@ It can also be used for an RDS cluster like this:
 ```tf
 module "secretsmanager-for-database-url" {
   source  = "babbel/secretsmanager-for-database-url/aws"
-  version = "~> 1.2"
+  version = "~> 3.0"
 
   name_prefix = "example"
 
   rds_cluster   = aws_rds_cluster.example
   database_name = "example"
   protocol      = "mysql2"
+}
+```
+
+## Keeping the password out of the Terraform state
+
+Set `secret_string_wo_version` to write both secrets with the provider's write-only `secret_string_wo`: neither the URLs nor the password are stored in the state, and the password in `db_instance` or `rds_cluster` is not read. This needs Terraform 1.11 or later.
+
+A new database takes its password from an ephemeral resource, written to the database and the URLs alike:
+
+```tf
+ephemeral "random_password" "example" {
+  length = 16
+}
+
+resource "aws_rds_cluster" "example" {
+  ...
+
+  master_password_wo         = ephemeral.random_password.example.result
+  master_password_wo_version = 1
+}
+
+module "secretsmanager-for-database-url" {
+  source  = "babbel/secretsmanager-for-database-url/aws"
+  version = "~> 3.0"
+
+  name_prefix = "example"
+
+  rds_cluster   = aws_rds_cluster.example
+  database_name = "example"
+  protocol      = "mysql2"
+
+  password_wo              = ephemeral.random_password.example.result
+  secret_string_wo_version = 1
+}
+```
+
+To rotate, bump both versions together.
+
+An existing database keeps its password with `adopt_current_password`: the module reads the password from the URL already in its `database_url` secret and returns it as the ephemeral `password_wo` output, to pass on to the database. Nothing rotates. The plan fails if the password cannot be decoded exactly.
+
+```tf
+resource "aws_rds_cluster" "example" {
+  ...
+
+  master_password_wo         = module.secretsmanager-for-database-url.password_wo
+  master_password_wo_version = 1
+}
+
+module "secretsmanager-for-database-url" {
+  ...
+
+  adopt_current_password   = true
+  secret_string_wo_version = 1
+}
+
+removed {
+  from = random_password.example
+
+  lifecycle {
+    destroy = false
+  }
 }
 ```
 
