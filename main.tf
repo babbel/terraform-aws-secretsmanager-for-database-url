@@ -26,8 +26,8 @@ resource "aws_secretsmanager_secret_version" "endpoint" {
 
   lifecycle {
     precondition {
-      condition     = var.adopt_current_password ? urlencode(local.password_wo) == local.current_password_encoded : true
-      error_message = "The password read from ${var.name_prefix}.database_url does not encode back to the same value, so it was decoded wrongly. Writing it would change the database URL; nothing was written."
+      condition     = local.password_wo_decoded
+      error_message = local.password_wo_decode_error
     }
   }
 }
@@ -46,6 +46,13 @@ resource "aws_secretsmanager_secret_version" "reader_endpoint" {
 
   secret_string_wo         = local.write_only ? "${var.protocol}://${urlencode(local.username)}:${urlencode(local.password_wo)}@${local.reader_endpoint}/${urlencode(var.database_name)}" : null
   secret_string_wo_version = var.secret_string_wo_version
+
+  lifecycle {
+    precondition {
+      condition     = local.password_wo_decoded
+      error_message = local.password_wo_decode_error
+    }
+  }
 }
 
 moved {
