@@ -16,8 +16,8 @@ locals {
   # Terraform has no urldecode(). urlencode() keeps letters, digits and "-._~", writes a space
   # as "+" and escapes the rest as %XX, so undo that for the printable ASCII characters: "+"
   # first, before "%2B" turns into "+", and "%25" last, so that an escaped "%" is not decoded
-  # twice. The precondition on the endpoint secret checks that the result encodes back to the
-  # same text, so a wrong decode fails the plan instead of changing the password.
+  # twice. Every consumer of the password checks that the result encodes back to the same
+  # text (local.password_wo_decoded), so a wrong decode fails instead of changing the password.
   current_password = var.adopt_current_password ? replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
     replace(local.current_password_encoded, "+", " "),
     "%20", " "), "%21", "!"), "%22", "\""), "%23", "#"), "%24", "$"), "%26", "&"), "%27", "'"), "%28", "("),
@@ -26,4 +26,10 @@ locals {
   "%60", "`"), "%7B", "{"), "%7C", "|"), "%7D", "}"), "%25", "%") : null
 
   password_wo = var.adopt_current_password ? local.current_password : var.password_wo
+
+  # Checked as a precondition by everything that takes the password: both URL secrets and the
+  # password_wo output, through which the database gets it. A postcondition on the ephemeral
+  # read cannot see the decoded value without a cycle.
+  password_wo_decoded      = var.adopt_current_password ? urlencode(local.password_wo) == local.current_password_encoded : true
+  password_wo_decode_error = "The password read from ${var.name_prefix}.database_url does not encode back to the same value, so it was decoded wrongly. Using it would change the database password; nothing was written."
 }
